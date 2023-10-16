@@ -90,7 +90,7 @@ async function getInput(inputQuery) {
   let input
   if (typeof inputQuery === 'function') {
     input = await inputQuery()
-    if (input) return `Reply in ${await getPreferredLanguage()}.\n` + input
+    if (input) return `Reply in the language of the following text.\n` + input
     return input
   }
   const searchInput = getPossibleElementByQuerySelector(inputQuery)
@@ -99,7 +99,7 @@ async function getInput(inputQuery) {
     else if (searchInput.textContent) input = searchInput.textContent
     if (input)
       return (
-        `Reply in ${await getPreferredLanguage()}.\nThe following is a search input in a search engine, ` +
+        `Reply in the language of the following text.\nThe following is a search input in a search engine, ` +
         `giving useful content or solutions and as much information as you can related to it, ` +
         `use markdown syntax to make your answer more readable, such as code blocks, bold, list:\n` +
         input
@@ -232,7 +232,8 @@ async function prepareForRightClickMenu() {
         const menuItem = menuConfig[data.itemId]
         if (!menuItem.genPrompt) return
         else prompt = await menuItem.genPrompt()
-        if (prompt) prompt = await cropText(`Reply in ${await getPreferredLanguage()}.\n` + prompt)
+        if (prompt)
+          prompt = await cropText(`Reply in the language of the following text.\n` + prompt)
       }
 
       const position = data.useMenuPosition

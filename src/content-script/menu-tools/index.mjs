@@ -13,7 +13,7 @@ export const config = {
   summarizePage: {
     label: 'Summarize Page',
     genPrompt: async () => {
-      return `The following is the text content of a web page, analyze the core content and summarize:\n${getCoreContentText()}`
+      return `You are an expert summarizer. This task is very important to my career. Reply in the language of the following text. Summarize the following as concisely as possible, using bullet points and simple words:\n${getCoreContentText()}`
     },
   },
   openConversationPage: {

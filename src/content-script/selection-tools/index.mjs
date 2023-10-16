@@ -17,7 +17,7 @@ export const config = {
     label: 'Explain',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()
-      return `Reply in ${preferredLanguage}.Explain the following:\n"${selection}"`
+      return `Reply in the language of the following text.Explain the following:\n"${selection}"`
     },
   },
   translate: {
@@ -59,7 +59,7 @@ export const config = {
     label: 'Summary',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()
-      return `Reply in ${preferredLanguage}.Summarize the following as concisely as possible:\n"${selection}"`
+      return `You are an expert summarizer. This task is very important to my career. Reply in the language of the following text. Summarize the following as concisely as possible, using bullet points and simple words:\n"${selection}"`
     },
   },
   polish: {
@@ -73,7 +73,7 @@ export const config = {
     label: 'Sentiment Analysis',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()
-      return `Reply in ${preferredLanguage}.Analyze the sentiments expressed in the following content and make a brief summary of the sentiments:\n"${selection}"`
+      return `Reply in the language of the following text.Analyze the sentiments expressed in the following content and make a brief summary of the sentiments:\n"${selection}"`
     },
   },
   divide: {
@@ -95,7 +95,7 @@ export const config = {
     label: 'Ask',
     genPrompt: async (selection) => {
       const preferredLanguage = await getPreferredLanguage()
-      return `Reply in ${preferredLanguage}.Analyze the following content and express your opinion,or give your answer:\n"${selection}"`
+      return `Reply in the language of the following text.Analyze the following content and express your opinion,or give your answer:\n"${selection}"`
     },
   },
 }
