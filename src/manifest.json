@@ -78,29 +78,26 @@
   "commands": {
     "newChat": {
       "suggested_key": {
-        "default": "Ctrl+B",
-        "mac": "MacCtrl+B"
+        "default": "Alt+X"
       },
       "description": "Create a new chat"
     },
     "summarizePage": {
       "suggested_key": {
-        "default": "Alt+B",
-        "mac": "Alt+B"
+        "default": "Alt+Z"
       },
       "description": "Summarize this page"
     },
     "openConversationPage": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+H",
-        "mac": "MacCtrl+Shift+H"
-      },
       "description": "Open the independent conversation page"
     },
     "openConversationWindow": {
       "description": "Open the independent conversation window"
     },
     "closeAllChats": {
+        "suggested_key": {
+            "default": "Alt+C"
+        },
       "description": "Close all chats in this page"
     }
   }
