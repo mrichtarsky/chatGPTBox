@@ -13,7 +13,7 @@ Integrasi Deep ChatGPT di browser Anda, sepenuhnya gratis.
 [![size](https://img.shields.io/badge/minified%20size-390%20kB-blue)][release-url]
 [![verfiy][verify-image]][verify-url]
 
-[Inggris](README.md) &nbsp;&nbsp;|&nbsp;&nbsp; Indonesia &nbsp;&nbsp;|&nbsp;&nbsp; [简体中文](README_ZH.md)
+[Inggris](README.md) &nbsp;&nbsp;|&nbsp;&nbsp; Indonesia &nbsp;&nbsp;|&nbsp;&nbsp; [简体中文](README_ZH.md) &nbsp;&nbsp;|&nbsp;&nbsp; [日本語](README_JA.md) &nbsp;&nbsp;|&nbsp;&nbsp; [Türkçe](README_TR.md)
 
 ### Install
 
@@ -72,6 +72,10 @@ Integrasi Deep ChatGPT di browser Anda, sepenuhnya gratis.
 
 - Ekstensi ini **tidak** mengumpulkan data Anda. Anda dapat memverifikasinya dengan melakukan pencarian global untuk `fetch(` dan `XMLHttpRequest(` dalam kode untuk menemukan semua panggilan permintaan jaringan. Jumlah kode tidak banyak, jadi mudah untuk melakukannya.
 
+- Anda dapat menggunakan proyek seperti https://github.com/BerriAI/litellm untuk mengkonversi API LLM ke dalam format OpenAI dan menggunakannya bersama dengan mode `Custom Model` dari ChatGPTBox
+
+- Anda juga dapat menggunakan https://openrouter.ai/docs#api-keys dengan mode `Custom Model` dari ChatGPTBox
+
 - Anda dapat mengatur proxy balik gratis di Pengaturan Lanjutan untuk menghindari cloudflare: https://github.com/transitive-bullshit/chatgpt-api#reverse-proxy
 
 - Model Offline/Self-hosted (RWKV, llama.cpp, ChatGLM) sekarang didukung, Lihat https://github.com/josStorer/selfhostedAI
@@ -79,7 +83,7 @@ Integrasi Deep ChatGPT di browser Anda, sepenuhnya gratis.
 ## ✨ Fitur
 
 - 🌈 Panggil kotak dialog percakapan di halaman apa pun kapan saja. (<kbd>Ctrl</kbd>+<kbd>B</kbd>)
-- 📱 Dukungan untuk perangkat mobile.
+- 📱 Dukungan untuk perangkat seluler.
 - 📓 Ringkaskan halaman apa pun dengan menu klik kanan. (<kbd>Alt</kbd>+<kbd>B</kbd>)
 - 📖 Halaman percakapan independen. (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>)
 - 🔗 Dukungan untuk beberapa API (Web API untuk pengguna Gratis dan Plus, GPT-3.5, GPT-4, New Bing, Self-Hosted, Azure, Poe, dll.).
@@ -120,7 +124,7 @@ Integrasi Deep ChatGPT di browser Anda, sepenuhnya gratis.
 
 ![preview_youtube](screenshots/preview_youtube.jpg)
 
-**Dukungan Perangkat Mobile**
+**Dukungan Perangkat Seluler**
 
 ![image](https://user-images.githubusercontent.com/13366013/225529110-9221c8ce-ad41-423e-b6ec-097981e74b66.png)
 

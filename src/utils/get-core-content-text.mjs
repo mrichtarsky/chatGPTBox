@@ -12,6 +12,9 @@ const adapters = {
   bing: ['#b_results'],
   wikipedia: ['#mw-content-text'],
   faz: ['.atc-Text'],
+  golem: ['article'],
+  eetimes: ['article'],
+  'new.qq.com': ['.content-article'],
 }
 
 function findLargestElement(e) {
@@ -61,6 +64,10 @@ export function getCoreContentText() {
   const secondLargestElement = findLargestElement(largestElement)
   console.log(largestElement)
   console.log(secondLargestElement)
+
+  function getTextFrom(e) {
+    return e.innerText || e.textContent
+  }
 
   let ret
   if (!largestElement) {

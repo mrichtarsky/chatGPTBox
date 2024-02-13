@@ -6,6 +6,7 @@ import { chatgptWebModelKeys, getUserConfig, Models } from '../../config/index.m
 import { pushRecord, setAbortController } from './shared.mjs'
 import Browser from 'webextension-polyfill'
 import { v4 as uuidv4 } from 'uuid'
+import { t } from 'i18next'
 
 async function request(token, method, path, data) {
   const apiUrl = (await getUserConfig()).customChatGptWebApiUrl
@@ -83,7 +84,38 @@ export async function generateAnswersWithChatgptWebApi(port, question, session, 
       })
       .join('; ')
 
+  const needArkoseToken = !usedModel.includes(Models[chatgptWebModelKeys[0]].value)
+  if (needArkoseToken && !config.chatgptArkoseReqUrl)
+    throw new Error(
+      t('Please login at https://chat.openai.com first') +
+        '\n\n' +
+        t(
+          "Please keep https://chat.openai.com open and try again. If it still doesn't work, type some characters in the input box of chatgpt web page and try again.",
+        ),
+    )
+  const arkoseToken = config.chatgptArkoseReqUrl
+    ? await fetch(config.chatgptArkoseReqUrl + '?' + config.chatgptArkoseReqParams, {
+        method: 'POST',
+        body: config.chatgptArkoseReqForm,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        },
+      })
+        .then((resp) => resp.json())
+        .then((resp) => resp.token)
+        .catch(() => null)
+    : null
+  if (needArkoseToken && !arkoseToken)
+    throw new Error(
+      t('Failed to get arkose token.') +
+        '\n\n' +
+        t(
+          "Please keep https://chat.openai.com open and try again. If it still doesn't work, type some characters in the input box of chatgpt web page and try again.",
+        ),
+    )
   let answer = ''
+  let generationPrefixAnswer = ''
+  let generatedImageUrl = ''
   await fetchSSE(`${config.customChatGptWebApiUrl}${config.customChatGptWebApiPath}`, {
     method: 'POST',
     signal: controller.signal,
@@ -95,7 +127,7 @@ export async function generateAnswersWithChatgptWebApi(port, question, session, 
     },
     body: JSON.stringify({
       action: 'next',
-      conversation_id: session.conversationId,
+      conversation_id: session.conversationId || undefined,
       messages: [
         {
           id: session.messageId,
@@ -108,18 +140,17 @@ export async function generateAnswersWithChatgptWebApi(port, question, session, 
           },
         },
       ],
+      conversation_mode: {
+        kind: 'primary_assistant',
+      },
+      force_paragen: false,
+      force_rate_limit: false,
+      suggestions: [],
       model: usedModel,
       parent_message_id: session.parentMessageId,
       timezone_offset_min: new Date().getTimezoneOffset(),
-      variant_purpose: 'none',
       history_and_training_disabled: config.disableWebModeHistory,
-      arkose_token: usedModel.startsWith('gpt-4')
-        ? `${Array.from({ length: 17 }, () => Math.floor(Math.random() * 16).toString(16)).join(
-            '',
-          )}|r=ap-southeast-1|meta=3|meta_width=300|metabgclr=transparent|metaiconclr=%23555555|guitextcolor=%23000000|pk=35536E1E-65B4-4D96-9D97-6ADB7EFF8147|at=40|sup=1|rid=${
-            Math.floor(Math.random() * 99) + 1
-          }|ag=101|cdn_url=https%3A%2F%2Ftcr9i.chat.openai.com%2Fcdn%2Ffc|lurl=https%3A%2F%2Faudio-ap-southeast-1.arkoselabs.com|surl=https%3A%2F%2Ftcr9i.chat.openai.com|smurl=https%3A%2F%2Ftcr9i.chat.openai.com%2Fcdn%2Ffc%2Fassets%2Fstyle-manager`
-        : undefined,
+      arkose_token: arkoseToken,
     }),
     onMessage(message) {
       console.debug('sse message', message)
@@ -136,11 +167,50 @@ export async function generateAnswersWithChatgptWebApi(port, question, session, 
         console.debug('json error', error)
         return
       }
+      if (data.error) {
+        if (data.error.includes('unusual activity'))
+          throw new Error(
+            "Please keep https://chat.openai.com open and try again. If it still doesn't work, type some characters in the input box of chatgpt web page and try again.",
+          )
+        else throw new Error(data.error)
+      }
+
       if (data.conversation_id) session.conversationId = data.conversation_id
       if (data.message?.id) session.parentMessageId = data.message.id
 
       const respAns = data.message?.content?.parts?.[0]
-      if (respAns) answer = respAns
+      const contentType = data.message?.content?.content_type
+      if (contentType === 'text' && respAns) {
+        answer =
+          generationPrefixAnswer +
+          (generatedImageUrl && `\n\n![](${generatedImageUrl})\n\n`) +
+          respAns
+      } else if (contentType === 'code' && data.message?.status === 'in_progress') {
+        const generationText = '\n\n' + t('Generating...')
+        if (answer && !answer.endsWith(generationText)) generationPrefixAnswer = answer
+        answer = generationPrefixAnswer + generationText
+      } else if (
+        contentType === 'multimodal_text' &&
+        respAns?.content_type === 'image_asset_pointer'
+      ) {
+        const imageAsset = respAns?.asset_pointer || ''
+        if (imageAsset) {
+          fetch(
+            `${config.customChatGptWebApiUrl}/backend-api/files/${imageAsset.replace(
+              'file-service://',
+              '',
+            )}/download`,
+            {
+              credentials: 'include',
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                ...(cookie && { Cookie: cookie }),
+              },
+            },
+          ).then((r) => r.json().then((json) => (generatedImageUrl = json?.download_url)))
+        }
+      }
+
       if (answer) {
         port.postMessage({ answer: answer, done: false, session: null })
       }

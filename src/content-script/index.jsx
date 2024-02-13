@@ -275,14 +275,15 @@ async function prepareForStaticCard() {
     )
       return
 
+    let initSuccess = true
     if (siteName in siteConfig) {
       const siteAction = siteConfig[siteName].action
       if (siteAction && siteAction.init) {
-        await siteAction.init(location.hostname, userConfig, getInput, mountComponent)
+        initSuccess = await siteAction.init(location.hostname, userConfig, getInput, mountComponent)
       }
     }
 
-    mountComponent(siteConfig[siteName], userConfig)
+    if (initSuccess) mountComponent(siteConfig[siteName], userConfig)
   }
 }
 
@@ -318,6 +319,18 @@ async function prepareForForegroundRequests() {
     const div = document.createElement('div')
     document.body.append(div)
     render(<NotificationForChatGPTWeb container={div} />, div)
+  }
+
+  if (location.pathname === '/') {
+    const input = document.querySelector('#prompt-textarea')
+    if (input) {
+      input.textContent = ' '
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      setTimeout(() => {
+        input.textContent = ''
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+      }, 300)
+    }
   }
 
   await Browser.runtime.sendMessage({

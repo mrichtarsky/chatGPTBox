@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import Browser from 'webextension-polyfill'
 import InputBox from '../InputBox'
@@ -170,15 +170,23 @@ function ConversationCard(props) {
           )
           break
         default: {
+          let formattedError = msg.error
+          if (typeof msg.error === 'string' && msg.error.trimStart().startsWith('{'))
+            try {
+              formattedError = JSON.stringify(JSON.parse(msg.error), null, 2)
+            } catch (e) {
+              /* empty */
+            }
+
           let lastItem
           if (conversationItemData.length > 0)
             lastItem = conversationItemData[conversationItemData.length - 1]
           if (lastItem && (lastItem.content.includes('gpt-loading') || lastItem.type === 'error'))
-            updateAnswer(msg.error, false, 'error')
+            updateAnswer(t(formattedError), false, 'error')
           else
             setConversationItemData([
               ...conversationItemData,
-              new ConversationItemData('error', msg.error),
+              new ConversationItemData('error', t(formattedError)),
             ])
           break
         }
@@ -291,6 +299,8 @@ function ConversationCard(props) {
       updateAnswer(e, false, 'error')
     }
   }
+
+  const retryFn = useMemo(() => getRetryFn(session), [session])
 
   return (
     <div className="gpt-inner">
@@ -500,8 +510,9 @@ function ConversationCard(props) {
             content={data.content}
             key={idx}
             type={data.type}
-            session={session}
-            onRetry={idx === conversationItemData.length - 1 ? getRetryFn(session) : null}
+            descName={data.type === 'answer' && session.aiName}
+            modelName={data.type === 'answer' && session.modelName}
+            onRetry={idx === conversationItemData.length - 1 ? retryFn : null}
           />
         ))}
       </div>
@@ -525,6 +536,10 @@ function ConversationCard(props) {
           } catch (e) {
             updateAnswer(e, false, 'error')
           }
+          bodyRef.current.scrollTo({
+            top: bodyRef.current.scrollHeight,
+            behavior: 'instant',
+          })
         }}
       />
     </div>
@@ -533,7 +548,7 @@ function ConversationCard(props) {
 
 ConversationCard.propTypes = {
   session: PropTypes.object.isRequired,
-  question: PropTypes.string.isRequired,
+  question: PropTypes.string,
   onUpdate: PropTypes.func,
   draggable: PropTypes.bool,
   closeable: PropTypes.bool,

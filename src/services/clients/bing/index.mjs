@@ -1,7 +1,7 @@
 // https://github.com/waylaidwanderer/node-chatgpt-api
 
 import { v4 as uuidv4 } from 'uuid'
-import BingImageCreator from './BingImageCreator'
+// import BingImageCreator from './BingImageCreator'
 import { fetchBg } from '../../../utils/fetch-bg.mjs'
 
 /**
@@ -39,9 +39,9 @@ export default class BingAIClient {
       }
     }
     this.debug = this.options.debug
-    if (this.options.features.genImage) {
-      this.bic = new BingImageCreator(this.options)
-    }
+    // if (this.options.features.genImage) {
+    //   this.bic = new BingImageCreator(this.options)
+    // }
   }
 
   static getValidIPv4(ip) {
@@ -490,8 +490,8 @@ export default class BingAIClient {
               return
             }
             // get the difference between the current text and the previous text
-            const difference = updatedText.substring(replySoFar.length)
-            onProgress(difference)
+            // const difference = updatedText.substring(replySoFar.length)
+            onProgress(updatedText)
             if (updatedText.trim().endsWith(stopToken)) {
               stopTokenFound = true
               // remove stop token from updated text

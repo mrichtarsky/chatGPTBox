@@ -10,6 +10,7 @@ import stackoverflow from './stackoverflow'
 import juejin from './juejin'
 import weixin from './weixin'
 import followin from './followin'
+import duckduckgo from './duckduckgo'
 
 /**
  * @typedef {object} SiteConfigAction
@@ -55,6 +56,9 @@ export const config = {
     sidebarContainerQuery: ['.js-react-sidebar', '.react-results--sidebar'],
     appendContainerQuery: ['#links_wrapper'],
     resultsContainerQuery: ['.react-results--main'],
+    action: {
+      init: duckduckgo.init,
+    },
   },
   startpage: {
     inputQuery: ["input[name='query']"],
@@ -113,6 +117,14 @@ export const config = {
     appendContainerQuery: ['.search-index__searchHeaderContainer-2JD6q'],
     resultsContainerQuery: ['.result-group-layout__component-1jzTe', '#search'],
   },
+  presearch: {
+    inputQuery: ["input[name='q']"],
+    sidebarContainerQuery: [
+      'div.w-full.\\32 lg\\:flex.\\32 lg\\:flex-row-reverse.\\32 lg\\:justify-end > div.flex.flex-col > div.z-1',
+    ],
+    appendContainerQuery: [],
+    resultsContainerQuery: ['div.text-gray-300.relative.z-1'],
+  },
   bilibili: {
     inputQuery: bilibili.inputQuery,
     sidebarContainerQuery: ['#danmukuBox'],
@@ -137,9 +149,9 @@ export const config = {
   },
   github: {
     inputQuery: github.inputQuery,
-    sidebarContainerQuery: ['#diff', '.commit'],
+    sidebarContainerQuery: ['#diff', '.commit', '.Layout-main'],
     appendContainerQuery: [],
-    resultsContainerQuery: ['#diff', '.commit'],
+    resultsContainerQuery: ['#diff', '.commit', '.Layout-main'],
     action: {
       init: github.init,
     },
